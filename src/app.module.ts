@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { UserModule } from './user/user.module';
 import { DogsModule } from './dogs/dogs.module';
@@ -6,7 +11,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './user/entities/user.entity';
 import { DogEntity } from './dogs/entities/dog.entity';
 import { ConfigModule } from '@nestjs/config';
+import { CommonModule } from './common/common.module';
+import { JwtModule } from './jwt/jwt.module';
 import * as Joi from 'joi';
+import { JwtMiddleware } from './jwt/jwt.middleware';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -21,10 +30,12 @@ import * as Joi from 'joi';
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
+        PRIVATE_KEY: Joi.string().required(),
       }),
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
+      context: ({ req }) => ({ user: req['user'] }),
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -37,10 +48,23 @@ import * as Joi from 'joi';
       logging: process.env.NODE_ENV === 'dev' ? true : false,
       entities: [UserEntity, DogEntity],
     }),
+    JwtModule.forRoot({
+      global: true,
+      privateKey: process.env.PRIVATE_KEY,
+    }),
     UserModule,
     DogsModule,
+    CommonModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtMiddleware).forRoutes({
+      path: '/graphql',
+      method: RequestMethod.ALL,
+    });
+  }
+}

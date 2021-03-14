@@ -1,19 +1,21 @@
-import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
-import { IsString, Length } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { IsNumber, IsString, Length } from 'class-validator';
+import { CoreEntity } from 'src/common/entity/core.entity';
+import { Column, Entity } from 'typeorm';
 
 @ObjectType()
 @Entity()
-export class DogEntity {
-  @PrimaryGeneratedColumn()
-  @Field((type) => Int)
-  id: number;
-
+export class DogEntity extends CoreEntity {
   @Field((type) => String)
   @Column()
   @IsString()
   @Length(1, 20)
   dog_name: string;
+
+  @Field((type) => Number)
+  @Column()
+  @IsNumber()
+  dog_age: number;
 
   @Field((type) => String)
   @Column()
@@ -24,8 +26,4 @@ export class DogEntity {
   @Column()
   @IsString()
   owner: string;
-
-  @Field((type) => String, { defaultValue: Date.now().toString() })
-  @Column({ default: Date.now().toString() })
-  created: string;
 }

@@ -1,12 +1,12 @@
-import { InputType, OmitType, PartialType } from '@nestjs/graphql';
+import { InputType, OmitType, PartialType, PickType } from '@nestjs/graphql';
 import { DogEntity } from '../entities/dog.entity';
 
 // @InputType()
 // export class CreateDogDto extends PartialType(DogEntity, InputType) {}
 
 @InputType()
-export class CreateDogDto extends OmitType(
+export class CreateDogDto extends PickType(
   DogEntity,
-  ['id', 'created'],
+  ['dog_name', 'dog_age', 'breed', 'owner'],
   InputType,
 ) {}
