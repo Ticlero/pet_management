@@ -15,7 +15,6 @@ export class MailService {
     emailVars: EmailVars[],
     to: string,
   ) {
-    console.log(subject, template, emailVars, to);
     const form = new FormData();
     form.append('from', `SH LVU PET <mailgun@${this.options.domain}>`);
     form.append('subject', subject);

@@ -3,7 +3,8 @@ import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import * as bcrypt from 'bcrypt';
 import { IsEmail, IsEnum, IsString } from 'class-validator';
 import { CoreEntity } from 'src/common/entity/core.entity';
-import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
+import { DogEntity } from 'src/dogs/entities/dog.entity';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
 
 enum UserRole {
   Client,
@@ -34,6 +35,9 @@ export class UserEntity extends CoreEntity {
   @Column({ default: false })
   @Field((type) => Boolean)
   verified: boolean;
+
+  @OneToMany((type) => DogEntity, (dog) => dog.user)
+  dogs: DogEntity[];
 
   @BeforeInsert()
   @BeforeUpdate()

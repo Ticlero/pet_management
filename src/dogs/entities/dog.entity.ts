@@ -1,7 +1,9 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { IsNumber, IsString, Length } from 'class-validator';
+import { type } from 'node:os';
 import { CoreEntity } from 'src/common/entity/core.entity';
-import { Column, Entity } from 'typeorm';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
 @ObjectType()
 @Entity()
@@ -22,8 +24,7 @@ export class DogEntity extends CoreEntity {
   @IsString()
   breed: string;
 
-  @Field((type) => String)
-  @Column()
-  @IsString()
-  owner: string;
+  @Field((type) => UserEntity)
+  @ManyToOne((type) => UserEntity, (user) => user.dogs)
+  user: UserEntity;
 }

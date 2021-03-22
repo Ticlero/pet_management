@@ -1,6 +1,10 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { AuthUser } from 'src/auth/auth-user.decorator';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { UserEntity } from 'src/user/entities/user.entity';
 import { DogsService } from './dogs.service';
-import { CreateDogDto } from './dtos/create.dog';
+import { CreateDogDto, CreateDogOutput } from './dtos/create.dog';
 import { UpdateDogDto } from './dtos/update.dog';
 import { DogEntity } from './entities/dog.entity';
 @Resolver()
@@ -12,16 +16,13 @@ export class DogsResolver {
     return this.dogsService.getAllDogs();
   }
 
-  @Mutation(() => Boolean)
-  async createDog(@Args('input') createDog: CreateDogDto): Promise<boolean> {
-    try {
-      const test = await this.dogsService.createDog(createDog);
-      console.log(test, typeof test);
-      return true;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
+  @UseGuards(AuthGuard)
+  @Mutation(() => CreateDogOutput)
+  async createDog(
+    @AuthUser() authUser: UserEntity,
+    @Args('input') createDog: CreateDogDto,
+  ): Promise<CreateDogOutput> {
+    return this.dogsService.createDog(authUser, createDog);
   }
 
   @Mutation(() => Boolean)
