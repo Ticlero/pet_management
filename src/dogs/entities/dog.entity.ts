@@ -1,6 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { IsNumber, IsString, Length } from 'class-validator';
-import { type } from 'node:os';
 import { CoreEntity } from 'src/common/entity/core.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';

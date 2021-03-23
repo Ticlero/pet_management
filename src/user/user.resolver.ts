@@ -5,6 +5,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateUserDto, CreateUserOutputDto } from './dtos/create.user.dto';
 import { EditUserInput, EditUserOutput } from './dtos/edit.user.dto';
 import { LoginInputDto, LoginOutput } from './dtos/login.user.dto';
+import { PetListViewOutput } from './dtos/petlist.user.dto';
 import { UserProfileInput, UserProfileOutput } from './dtos/profile.user.dto';
 import {
   VerificationEmailInput,
@@ -64,5 +65,13 @@ export class UserResolver {
   ): Promise<VerificationEmailOutput> {
     console.log(verificationEmailInput);
     return this.userService.verifyEmail(verificationEmailInput);
+  }
+
+  @UseGuards(AuthGuard)
+  @Mutation((returns) => PetListViewOutput)
+  async viewMyPets(
+    @AuthUser() authUser: UserEntity,
+  ): Promise<PetListViewOutput> {
+    return await this.userService.getMyPets(authUser);
   }
 }
